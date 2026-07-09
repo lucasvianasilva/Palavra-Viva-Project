@@ -1,0 +1,15 @@
+# Chaves e Senhas
+.env
+*.env
+backend/.env
+
+# Python (Backend)
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# Node/React (Frontend)
+node_modules/
+dist/
