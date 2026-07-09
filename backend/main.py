@@ -106,7 +106,7 @@ async def aconselhar_usuario(message: UserMessage):
 
         # Chamada para o modelo estável e gratuito Gemini 2.5 Flash
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-1.5-flash',
             contents=message.text,
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_INSTRUCTION,
