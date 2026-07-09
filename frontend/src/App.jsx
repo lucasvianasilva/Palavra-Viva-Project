@@ -52,7 +52,7 @@ function App() {
     setLoading(true);
 
     try {
-      const response = await axios.post('https://palavra-viva-api-0s2i.onrender.com', {
+      const response = await axios.post('https://palavra-viva-api-0s2i.onrender.com/api/aconselhar', {
         text: currentInput
       });
       
