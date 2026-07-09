@@ -1,4 +1,5 @@
 import os
+import traceback
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -25,10 +26,16 @@ app.add_middleware(
 try:
     api_key_render = os.environ.get("GEMINI_API_KEY")
     if not api_key_render:
-        print("Aviso: GEMINI_API_KEY não encontrada nas variáveis de ambiente.")
+        print("⚠️ AVISO CRÍTICO: GEMINI_API_KEY não foi encontrada no ambiente do Render!")
+    else:
+        print("Chave GEMINI_API_KEY detectada no servidor. Inicializando cliente...")
+    
     client = genai.Client(api_key=api_key_render)
+    print("✅ Sucesso: Cliente Gemini inicializado.")
+
 except Exception as e:
-    print(f"Erro ao inicializar o cliente Gemini: {e}")
+    print("❌ ERRO CRÍTICO NA INICIALIZAÇÃO DO CLIENTE GEMINI:")
+    traceback.print_exc()
     client = None
 
 # Definição do modelo de dados de entrada usando Pydantic
@@ -88,12 +95,15 @@ REGRAS CRUCIAIS DE FORMATAÇÃO
 @app.post("/api/aconselhar")
 async def aconselhar_usuario(message: UserMessage):
     if not client:
+        print("❌ Erro no endpoint: A requisição chegou, mas o 'client' da IA está nulo (None).")
         raise HTTPException(status_code=500, detail="Serviço de IA não configurado no servidor.")
     
     if not message.text.strip():
         raise HTTPException(status_code=400, detail="A mensagem não pode estar vazia.")
     
     try:
+        print(f"🚀 Enviando pedido ao Gemini. Texto: '{message.text[:30]}...'")
+
         # Chamada para o modelo estável e gratuito Gemini 2.5 Flash
         response = client.models.generate_content(
             model='gemini-2.5-flash',
@@ -105,10 +115,13 @@ async def aconselhar_usuario(message: UserMessage):
         )
         
         # Como o projeto é stateless, apenas retorna a resposta sem salvar nada
+        print("✅ Resposta recebida com sucesso da API da Google!")
         return {"response": response.text}
         
     except Exception as e:
         # Tratamento simples de erro para a API
+        print("❌ ERRO DURANTE A REQUISIÇÃO DE CONTEÚDO AO GEMINI:")
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Erro ao processar a resposta da IA: {str(e)}")
 
 @app.get("/health")
