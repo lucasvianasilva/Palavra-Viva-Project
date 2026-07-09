@@ -22,9 +22,11 @@ app.add_middleware(
 )
 
 # Inicializa o cliente oficial do Gemini SDK
-# Ele busca automaticamente a variável GEMINI_API_KEY no ambiente
 try:
-    client = genai.Client()
+    api_key_render = os.environ.get("GEMINI_API_KEY")
+    if not api_key_render:
+        print("Aviso: GEMINI_API_KEY não encontrada nas variáveis de ambiente.")
+    client = genai.Client(api_key=api_key_render)
 except Exception as e:
     print(f"Erro ao inicializar o cliente Gemini: {e}")
     client = None
